@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>   
+    <!DOCTYPE mapper   
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.company.demo.dao.IAdminDao">
+
+	<cache />
+
+	<resultMap type="com.company.demo.pojo.Admin" id="adminResult">
+		<id property="id" column="id" />
+		<result property="roleId" column="role_id" />
+		<result property="account" column="account" />
+		<result property="password" column="password" />
+		<result property="realName" column="real_name" />
+		<result property="sex" column="sex" />
+		<result property="birthday" column="birthday" />
+		<result property="inputTime" column="input_time" />
+		<result property="online" column="online" />
+		<result property="enabled" column="enabled" />
+		<result property="explain" column="explain" />
+
+		<association property="adminRole" column="role_id" javaType="com.company.demo.pojo.AdminRole" resultMap="com.company.demo.dao.IAdminRoleDao.adminRoleResult">
+			<!-- <id property="id" column="id" />
+			<result property="roleName" column="role_name" /> -->
+		</association>
+
+	</resultMap>
+	
+	<sql id="field_select_all">a.`id`,a.`role_id`,a.`account`,a.`real_name`,a.`sex`,a.`birthday`,a.`input_time`,a.`online`,a.`enabled`,a.`explain`</sql>
+	<sql id="field_edit">`account`,`password`,`role_id`,`real_name`,`sex`,`birthday`</sql>
+
+	<select id="findByAccountAndPassword" resultMap="adminResult">
+		 SELECT <include refid="field_select_all"/>,ar.* FROM `admin` AS a LEFT JOIN  `admin_role` AS ar ON a.`role_id`=ar.`id` WHERE a.`account` =#{account} AND a.`password` =#{password}
+	</select>
+	
+	<select id="isExist">
+		SELECT EXISTS(SELECT 1 FROM `admin` WHERE `account`=#{account} LIMIT 1)
+	</select>
+	
+	
+	<insert id="save">
+		INSERT INTO `admin`(<include refid="field_edit"/>)
+		VALUES (#{account},#{password},#{roleId},#{realName},#{sex},#{birthday})
+	</insert>
+	
+	<update id="updatePassword">
+		UPDATE `admin` AS a
+		<set>
+			a.`password`=#{newPassword}
+		</set>
+		<where>a.`password`=#{password} AND a.`account`=#{account}</where>
+	</update>
+	
+	<delete id="delete">
+		DELETE FROM `admin` WHERE `id` = #{id}  
+	</delete>
+	
+</mapper>
