@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN"
+        "http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd">
+
+<!-- Configuration file for  http://www.tuckey.org/urlrewrite/ -->
+<urlrewrite>
+
+	<rule><from>/+</from><to>/</to></rule>
+	
+	<!-- 	不准访问 .do 或 jsp
+	<rule>
+		<from>(/\w+)+\.(jsp|vm)</from>
+		<to>/404.jsp</to>
+	</rule>-->
+
+	<!-- <rule>
+		<from>/fileupload/product</from>
+		<to>/fileupload.do?type=img&amp;dpi=&amp;size=800KB</to>
+	</rule>
+	
+	<rule>
+		<from>/fileupload/shop/liveparty</from>
+		<to>/fileupload.do?type=img&amp;dpi=430*210&amp;size=800KB</to>
+	</rule>
+	 -->
+	<rule>
+		<from>/upload/img/def</from>
+		<to>/upload.do?type=img&amp;dpi=&amp;size=800KB&amp;copy=147*110</to>
+	</rule>
+
+	<rule>
+		<from>^((/\w+)+)?$</from>
+		<to>$1.do</to>
+	</rule>
+	
+
+
+</urlrewrite>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd http://www.springframework.org/schema/context  
+     http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+     http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/data/jpa
+     http://www.springframework.org/schema/data/jpa/spring-jpa.xsd http://www.springframework.org/schema/tx  
+     http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+	
+
+	<!-- 引入配置文件 bean 优先 , 使用<context:property-placeholder location="classpath:jdbc.properties" /> 无效 -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:jdbc.properties" />
+	</bean>
+	
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${driver}" />
+		<property name="url" value="${url}" />
+		<property name="username" value="${username}" />
+		<property name="password" value="${password}" />
+		<!-- 	初始化连接大小 -->
+		<property name="initialSize" value="${initialSize}"></property>
+		<!-- 	连接池最大数量 -->
+		<property name="maxActive" value="${maxActive}"></property>
+		<!-- 	连接池最大空闲 -->
+		<property name="maxIdle" value="${maxIdle}"></property>
+		<!-- 	连接池最小空闲 -->
+		<property name="minIdle" value="${minIdle}"></property>
+		<!-- 	获取连接最大等待时间 -->
+		<property name="maxWait" value="${maxWait}"></property>
+	</bean>
+
+	<!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation" value="/WEB-INF/mybatis-config.xml" />
+		<property name="dataSource" ref="dataSource" />
+		<!-- 自动扫描mapping.xml文件 -->
+		<property name="mapperLocations" value="classpath:com/company/demo/mapper/*.xml"></property>
+		<property name="plugins">
+			<list>
+				<bean class="com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor">
+					<property name="dialectClass" value="com.github.miemiedev.mybatis.paginator.dialect.MySQLDialect"></property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.biaodian.uf.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	</bean>
+
+	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+		<!-- 指向切入点和通知 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="add*" propagation="REQUIRED" rollback-for="Java.lang.Exception" />
+			<tx:method name="save*" propagation="REQUIRED" rollback-for="Java.lang.Exception" />
+			<tx:method name="delete*" propagation="REQUIRED" rollback-for="Java.lang.Exception" />
+			<tx:method name="update*" propagation="REQUIRED" rollback-for="Java.lang.Exception" />
+			<tx:method name="execute*" propagation="REQUIRED" rollback-for="Java.lang.Exception" />
+			
+			<tx:method name="*" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config>
+		<!-- 切入点 -->
+		<aop:pointcut id="crudMethos" expression="(execution(* com.company.demo.service.impl.*.*(..)))" />
+		<!-- 第一个*号代表可以是任意返回类型,第二个*代表包下的所有类,第三个*代表类下的所有方法,之后的(..)代表任意的参数 -->
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="crudMethos" />
+	</aop:config>
+
+</beans>
