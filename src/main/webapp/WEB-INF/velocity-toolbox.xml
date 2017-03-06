@@ -3,6 +3,6 @@
 	<tool>
 	    <key>constant</key>
 	    <scope>application</scope>
-	    <class>com.biaodian.uf.Constant</class>
+	    <class>com.company.demo.Constant</class>
 	</tool>
 </toolbox>
