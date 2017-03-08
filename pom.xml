@@ -15,7 +15,7 @@
     <!--<spring.security.version>4.2.2.RELEASE</spring.security.version>-->
     <!--  		<spring.data.jpa.version>1.8.2.RELEASE</spring.data.jpa.version> -->
     <velocity.version>1.7</velocity.version>
-    <mysql.version>5.1.19</mysql.version>
+    <mysql.version>5.1.38</mysql.version>
     <servlet.version>2.5</servlet.version>
     <urlrewritefilter.version>4.0.4</urlrewritefilter.version>
     <mybatis.version>3.2.8</mybatis.version>
@@ -60,6 +60,13 @@
       <artifactId>fastjson</artifactId>
       <version>1.2.6</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.alibaba/druid -->
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>druid</artifactId>
+      <version>1.0.27</version>
+    </dependency>
+
 
     <!-- SLF4J，即简单日志门面（Simple Logging Facade for Java），不是具体的日志解决方案，它只服务于各种各样的日志系统。 -->
     <dependency>
